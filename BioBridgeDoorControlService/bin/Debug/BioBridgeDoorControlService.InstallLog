@@ -1,0 +1,34 @@
+﻿Installing assembly 'U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe
+   logfile = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.InstallLog
+Installing service BioBridgeDoorControl...
+Service BioBridgeDoorControl has been successfully installed.
+Creating EventLog source BioBridgeDoorControl in log Application...
+Committing assembly 'U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe
+   logfile = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.InstallLog
+Uninstalling assembly 'U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe
+   logfile = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.InstallLog
+Removing EventLog source BioBridgeDoorControl.
+Service BioBridgeDoorControl is being removed from the system...
+Service BioBridgeDoorControl was successfully removed from the system.
+Installing assembly 'U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe
+   logfile = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.InstallLog
+Installing service BioBridgeDoorControl...
+Service BioBridgeDoorControl has been successfully installed.
+Creating EventLog source BioBridgeDoorControl in log Application...
+Committing assembly 'U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   assemblypath = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.exe
+   logfile = U:\D-biobridgeSDKservice\BioBridgeDoorControl\BioBridgeDoorControlService\bin\Debug\BioBridgeDoorControlService.InstallLog
