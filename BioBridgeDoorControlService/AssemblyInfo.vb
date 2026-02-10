@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("BioBridge Door Control Service")> 
-<Assembly: AssemblyDescription("Service Windows pour contrôler les portes BioBridge via API HTTP REST")> 
-<Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("BioBridge Door Control")> 
+<Assembly: AssemblyTitle("URZIS Door Monitoring (UDM)")>
+<Assembly: AssemblyDescription("Service de monitoring et controle des portes URZIS via API HTTP REST")>
+<Assembly: AssemblyCompany("URZIS")>
+<Assembly: AssemblyProduct("URZIS Door Monitoring")> 
 <Assembly: AssemblyCopyright("")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: CLSCompliant(True)> 

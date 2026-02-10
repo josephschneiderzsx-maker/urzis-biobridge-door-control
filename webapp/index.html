@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>UDM - URZIS Door Monitoring</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      width: 100%;
+      padding: 24px 16px 12px;
+      text-align: center;
+      background: linear-gradient(135deg, #1a1a3e, #0f0f1a);
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    .header .subtitle {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .status-bar {
+      width: 100%;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      background: #141428;
+      border-bottom: 1px solid #1e1e3a;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #555;
+      transition: background 0.3s;
+    }
+
+    .status-dot.ok { background: #4CAF50; box-shadow: 0 0 8px #4CAF5088; }
+    .status-dot.err { background: #f44336; box-shadow: 0 0 8px #f4433688; }
+    .status-dot.warn { background: #ff9800; box-shadow: 0 0 8px #ff980088; }
+
+    .main {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .config {
+      background: #1a1a32;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #2a2a4a;
+    }
+
+    .config label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .config select, .config input {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #0f0f1a;
+      color: #fff;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .config select:focus, .config input:focus {
+      border-color: #4a6cf7;
+    }
+
+    .config .row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .config .row > div { flex: 1; }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+      letter-spacing: 0.5px;
+      transition: transform 0.1s, opacity 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-open {
+      background: linear-gradient(135deg, #43a047, #2e7d32);
+      box-shadow: 0 4px 15px #43a04744;
+      font-size: 20px;
+      padding: 24px;
+    }
+
+    .btn-close {
+      background: linear-gradient(135deg, #e53935, #c62828);
+      box-shadow: 0 4px 15px #e5393544;
+    }
+
+    .btn-status {
+      background: linear-gradient(135deg, #1e88e5, #1565c0);
+      box-shadow: 0 4px 15px #1e88e544;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-row .btn { flex: 1; }
+
+    .result {
+      background: #1a1a32;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #2a2a4a;
+      min-height: 60px;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .result .time {
+      font-size: 11px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .result .msg { color: #ccc; }
+    .result .msg.success { color: #66bb6a; }
+    .result .msg.error { color: #ef5350; }
+
+    .log {
+      margin-top: auto;
+      padding: 12px 16px 24px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .log-title {
+      font-size: 11px;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .log-entries {
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 12px;
+      color: #666;
+      font-family: 'Courier New', monospace;
+    }
+
+    .log-entries div { padding: 2px 0; }
+
+    .server-input {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .server-input input { flex: 1; }
+
+    .server-input .btn-sm {
+      padding: 12px 14px;
+      border: 1px solid #333;
+      background: #1a1a32;
+      color: #888;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .server-input .btn-sm:hover { border-color: #4a6cf7; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>UDM</h1>
+    <div class="subtitle">URZIS Door Monitoring</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Non connecte</span>
+  </div>
+
+  <div class="main">
+
+    <div class="config">
+      <label>Serveur UDM</label>
+      <div class="server-input">
+        <input type="text" id="server" value="http://localhost:8080" placeholder="http://192.168.40.100:8080">
+        <button class="btn-sm" onclick="testConnection()">Test</button>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Terminal (porte)</label>
+          <select id="terminal">
+            <option value="192.168.40.10">192.168.40.10</option>
+            <option value="192.168.40.9">192.168.40.9</option>
+          </select>
+        </div>
+        <div>
+          <label>Duree (ms)</label>
+          <input type="number" id="delay" value="3000" min="500" max="30000" step="500">
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-open" id="btnOpen" onclick="openDoor()">OUVRIR LA PORTE</button>
+      <div class="btn-row">
+        <button class="btn btn-close" id="btnClose" onclick="closeDoor()">FERMER</button>
+        <button class="btn btn-status" id="btnStatus" onclick="getStatus()">STATUT</button>
+      </div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="msg">Pret. Configurez le serveur et appuyez sur un bouton.</div>
+    </div>
+
+    <div class="log">
+      <div class="log-title">Historique</div>
+      <div class="log-entries" id="logEntries"></div>
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function getServer() {
+    return $('server').value.replace(/\/+$/, '');
+  }
+
+  function now() {
+    return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  function showResult(msg, type) {
+    $('result').innerHTML = '<div class="time">' + now() + '</div><div class="msg ' + (type || '') + '">' + msg + '</div>';
+  }
+
+  function addLog(msg) {
+    const el = $('logEntries');
+    const div = document.createElement('div');
+    div.textContent = now() + ' - ' + msg;
+    el.insertBefore(div, el.firstChild);
+    if (el.children.length > 20) el.removeChild(el.lastChild);
+  }
+
+  function setStatus(status, text) {
+    $('statusDot').className = 'status-dot ' + status;
+    $('statusText').textContent = text;
+  }
+
+  function disable(ids, val) {
+    ids.forEach(id => $(id).disabled = val);
+  }
+
+  async function openDoor() {
+    const terminal = $('terminal').value;
+    const delay = parseInt($('delay').value) || 3000;
+    disable(['btnOpen', 'btnClose', 'btnStatus'], true);
+    showResult('Ouverture en cours...', '');
+    addLog('OPEN ' + terminal + ' (' + delay + 'ms)');
+
+    try {
+      const res = await fetch(getServer() + '/open', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ terminalIP: terminal, delay: delay })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showResult('PORTE OUVERTE\n' + terminal + ' - ' + data.delay + 'ms', 'success');
+        setStatus('ok', 'Porte ouverte');
+        addLog('OK - Porte ouverte');
+      } else {
+        showResult('ECHEC : ' + (data.message || 'Erreur inconnue'), 'error');
+        setStatus('err', 'Echec ouverture');
+        addLog('ERREUR - ' + (data.message || 'Echec'));
+      }
+    } catch (e) {
+      showResult('ERREUR DE CONNEXION\n' + e.message, 'error');
+      setStatus('err', 'Connexion impossible');
+      addLog('ERREUR - ' + e.message);
+    }
+    disable(['btnOpen', 'btnClose', 'btnStatus'], false);
+  }
+
+  async function closeDoor() {
+    disable(['btnOpen', 'btnClose', 'btnStatus'], true);
+    showResult('Fermeture...', '');
+    addLog('CLOSE');
+
+    try {
+      const res = await fetch(getServer() + '/close', { method: 'POST' });
+      const data = await res.json();
+      showResult(data.message || 'Commande envoyee', data.success ? 'success' : 'error');
+      setStatus(data.success ? 'ok' : 'warn', data.status || 'Fermeture');
+      addLog('OK - ' + (data.message || 'Fermeture'));
+    } catch (e) {
+      showResult('ERREUR DE CONNEXION\n' + e.message, 'error');
+      setStatus('err', 'Connexion impossible');
+      addLog('ERREUR - ' + e.message);
+    }
+    disable(['btnOpen', 'btnClose', 'btnStatus'], false);
+  }
+
+  async function getStatus() {
+    disable(['btnOpen', 'btnClose', 'btnStatus'], true);
+    addLog('STATUS');
+
+    try {
+      const res = await fetch(getServer() + '/status');
+      const data = await res.json();
+
+      let statusClass = 'ok';
+      if (data.status === 'Disconnected' || data.status === 'SDK Not Registered' || data.status === 'Initialization Failed') {
+        statusClass = 'err';
+      } else if (data.status === 'Ajar') {
+        statusClass = 'warn';
+      }
+
+      setStatus(statusClass, data.status);
+      showResult(
+        'Status : ' + data.status +
+        '\nDernier event : ' + (data.lastEvent || 'Aucun') +
+        '\nNombre events : ' + data.eventsCount +
+        '\nConnecte : ' + (data.connected ? 'Oui' : 'Non'),
+        'success'
+      );
+      addLog('OK - Status: ' + data.status);
+    } catch (e) {
+      showResult('ERREUR DE CONNEXION\n' + e.message, 'error');
+      setStatus('err', 'Connexion impossible');
+      addLog('ERREUR - ' + e.message);
+    }
+    disable(['btnOpen', 'btnClose', 'btnStatus'], false);
+  }
+
+  async function testConnection() {
+    showResult('Test de connexion...', '');
+    addLog('TEST ' + getServer());
+    try {
+      const res = await fetch(getServer() + '/status');
+      const data = await res.json();
+      showResult('CONNEXION OK\nServeur UDM accessible\nStatus: ' + data.status, 'success');
+      setStatus('ok', data.status);
+      addLog('TEST OK - ' + data.status);
+    } catch (e) {
+      showResult('CONNEXION ECHOUEE\n' + e.message + '\n\nVerifiez :\n- Le serveur UDM tourne\n- L\'adresse IP est correcte\n- Le pare-feu autorise le port', 'error');
+      setStatus('err', 'Non connecte');
+      addLog('TEST ECHEC - ' + e.message);
+    }
+  }
+
+  // Charger le serveur sauvegarde
+  const saved = localStorage.getItem('udm_server');
+  if (saved) $('server').value = saved;
+  $('server').addEventListener('change', function() {
+    localStorage.setItem('udm_server', this.value);
+  });
+
+  // Test auto au chargement
+  setTimeout(testConnection, 500);
+</script>
+
+</body>
+</html>

@@ -33,10 +33,10 @@ Imports System.Configuration.Install
     'It can be modified using the Component Designer.  
     'Do not modify it using the code editor.
     Friend WithEvents ServiceProcessInstaller1 As System.ServiceProcess.ServiceProcessInstaller
-    Friend WithEvents BioBridgeDoorControl As System.ServiceProcess.ServiceInstaller
+    Friend WithEvents UDMServiceInstaller As System.ServiceProcess.ServiceInstaller
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.ServiceProcessInstaller1 = New System.ServiceProcess.ServiceProcessInstaller
-        Me.BioBridgeDoorControl = New System.ServiceProcess.ServiceInstaller
+        Me.UDMServiceInstaller = New System.ServiceProcess.ServiceInstaller
         '
         'ServiceProcessInstaller1
         '
@@ -44,15 +44,15 @@ Imports System.Configuration.Install
         Me.ServiceProcessInstaller1.Password = Nothing
         Me.ServiceProcessInstaller1.Username = Nothing
         '
-        'BioBridgeDoorControl
+        'UDMServiceInstaller
         '
-        Me.BioBridgeDoorControl.ServiceName = "BioBridgeDoorControl"
-        Me.BioBridgeDoorControl.DisplayName = "BioBridge Door Control Service"
-        Me.BioBridgeDoorControl.Description = "Service de contrôle des portes BioBridge avec API HTTP REST"
+        Me.UDMServiceInstaller.ServiceName = "UDM"
+        Me.UDMServiceInstaller.DisplayName = "URZIS Door Monitoring (UDM)"
+        Me.UDMServiceInstaller.Description = "Service de monitoring et controle des portes URZIS via API HTTP REST"
         '
         'ProjectInstaller
         '
-        Me.Installers.AddRange(New System.Configuration.Install.Installer() {Me.ServiceProcessInstaller1, Me.BioBridgeDoorControl})
+        Me.Installers.AddRange(New System.Configuration.Install.Installer() {Me.ServiceProcessInstaller1, Me.UDMServiceInstaller})
 
     End Sub
 

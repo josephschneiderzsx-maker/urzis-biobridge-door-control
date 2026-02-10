@@ -1,6 +1,6 @@
-# BioBridge Door Control Service
+# URZIS Door Monitoring (UDM)
 
-Service Windows qui expose une API HTTP REST pour controler les portes BioBridge a distance depuis n'importe quel appareil (telephone, tablette, web app, application mobile APK).
+Service Windows qui expose une API HTTP REST pour controler les portes a distance depuis n'importe quel appareil (telephone, tablette, web app, application mobile APK).
 
 ---
 
@@ -14,7 +14,7 @@ Service Windows qui expose une API HTTP REST pour controler les portes BioBridge
        v
   Serveur Windows (ex: 192.168.40.100:8080)
        |
-       | BioBridgeDoorControlService.exe
+       | UDM.exe (URZIS Door Monitoring)
        | API REST sur port 8080
        |
        v
@@ -183,7 +183,7 @@ Creer un fichier HTML accessible depuis le telephone :
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BioBridge Door Control</title>
+  <title>UDM - URZIS Door Monitoring</title>
   <style>
     body { font-family: Arial; text-align: center; padding: 20px; background: #1a1a2e; color: white; }
     .btn { display: block; width: 80%; max-width: 300px; margin: 15px auto; padding: 20px;
@@ -200,7 +200,7 @@ Creer un fichier HTML accessible depuis le telephone :
   </style>
 </head>
 <body>
-  <h1>BioBridge Door Control</h1>
+  <h1>UDM - URZIS Door Monitoring</h1>
 
   <label>Terminal :</label><br>
   <select id="terminal">
@@ -276,7 +276,7 @@ Creer une app Android minimale qui encapsule la web app :
 
 **MainActivity.java :**
 ```java
-package com.biobridge.doorcontrol;
+package com.urzis.doormonitoring;
 
 import android.os.Bundle;
 import android.webkit.WebSettings;
@@ -420,34 +420,45 @@ Copier le fichier genere dans le dossier du projet (`BioBridgeDoorControlService
 "C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe" BioBridgeDoorControlService\BioBridgeDoorControlService.vbproj -p:Configuration=Debug -p:Platform=AnyCPU -t:Build
 ```
 
+Le fichier compile s'appelle `UDM.exe`.
+
 ### Etape 4 : Deployer les fichiers
 
-Copier depuis `BioBridgeDoorControlService\bin\Debug\` vers `C:\BioBridgeDoorControl\` :
+Creer le dossier et copier les fichiers :
 
-| Fichier | Source |
-|---------|--------|
-| `BioBridgeDoorControlService.exe` | Compile depuis le projet |
-| `BioBridgeSDKDLLv3.dll` | Copie depuis `C:\Windows\SysWOW64\` |
-| `Interop.zkemkeeper.dll` | Genere a l'etape 2 |
+```cmd
+mkdir C:\UDM
+copy BioBridgeDoorControlService\bin\Debug\UDM.exe C:\UDM\
+copy BioBridgeDoorControlService\bin\Debug\BioBridgeSDKDLLv3.dll C:\UDM\
+copy BioBridgeDoorControlService\bin\Debug\Interop.zkemkeeper.dll C:\UDM\
+```
+
+**Fichiers dans `C:\UDM\` :**
+
+| Fichier | Description |
+|---------|-------------|
+| `UDM.exe` | Executable du service URZIS Door Monitoring |
+| `BioBridgeSDKDLLv3.dll` | SDK BioBridge (.NET assembly) |
+| `Interop.zkemkeeper.dll` | COM Interop (genere a l'etape 2) |
 
 ### Etape 5 : Installer le service Windows
 
 En tant qu'Administrateur :
 ```cmd
-sc create BioBridgeDoorControl binpath= "C:\BioBridgeDoorControl\BioBridgeDoorControlService.exe" start= auto displayname= "BioBridge Door Control Service"
+sc create UDM binpath= "C:\UDM\UDM.exe" start= auto displayname= "URZIS Door Monitoring (UDM)"
 ```
 
 ### Etape 6 : Demarrer le service
 
 ```cmd
-net start BioBridgeDoorControl
+net start UDM
 ```
 
 ### Etape 7 : Verifier
 
 ```powershell
 # Verifier que le service tourne
-Get-Service BioBridgeDoorControl
+Get-Service UDM
 
 # Tester l'API
 Invoke-WebRequest -UseBasicParsing -Uri http://localhost:8080/status
@@ -463,19 +474,19 @@ Pour que les telephones et applications puissent acceder au service :
 
 En tant qu'Administrateur :
 ```cmd
-netsh advfirewall firewall add rule name="BioBridge Door Control" dir=in action=allow protocol=tcp localport=8080
+netsh advfirewall firewall add rule name="UDM - URZIS Door Monitoring" dir=in action=allow protocol=tcp localport=8080
 ```
 
 ### 2. Configurer le HttpListener pour accepter les connexions distantes
 
-Par defaut, le service ecoute uniquement sur `localhost`. Pour accepter les connexions depuis d'autres appareils du reseau, modifier la constante dans `Service1.vb` :
+Par defaut, le service ecoute uniquement sur `localhost`. Pour accepter les connexions depuis d'autres appareils du reseau, modifier le prefix HttpListener dans `Service1.vb` :
 
-Le prefix HttpListener actuel :
+De :
 ```
 http://localhost:8080/
 ```
 
-Doit etre change en (necessite droits admin pour le service) :
+Vers (necessite droits admin pour le service) :
 ```
 http://+:8080/
 ```
@@ -523,7 +534,7 @@ Telephone / Web App / App Mobile
     |
     | HTTP POST/GET (port 8080, reseau WiFi)
     v
-BioBridgeDoorControlService.exe (.NET 4.8, x86)
+UDM.exe - URZIS Door Monitoring (.NET 4.8, x86)
     |-- HttpListener (serveur REST API)
     |     |-- POST /open   -> OpenDoor(terminalIP, delay)
     |     |-- POST /close  -> CheckClose()
@@ -557,13 +568,13 @@ BioBridgeDoorControl\
   README.md                          -- Cette documentation
   SDK-ISSUE.md                       -- Historique de resolution du SDK
   BioBridgeDoorControlService\
-    Service1.vb                      -- Code principal du service
+    Service1.vb                      -- Code principal du service UDM
     ProjectInstaller.vb              -- Installeur Windows Service
     AssemblyInfo.vb                  -- Informations d'assembly
     BioBridgeDoorControlService.vbproj -- Fichier projet MSBuild
     Interop.zkemkeeper.dll           -- COM Interop (genere)
     bin\Debug\
-      BioBridgeDoorControlService.exe  -- Executable compile
+      UDM.exe                         -- Executable compile
       BioBridgeSDKDLLv3.dll            -- SDK BioBridge
       Interop.zkemkeeper.dll           -- COM Interop
 ```
@@ -574,13 +585,13 @@ BioBridgeDoorControl\
 
 Tous les evenements sont enregistres dans **Event Viewer Windows** :
 
-- **Source** : `BioBridgeDoorControl`
+- **Source** : `UDM`
 - **Log** : `Application`
 - **Emplacement** : Event Viewer > Windows Logs > Application
 
 **Consulter les derniers logs :**
 ```powershell
-Get-EventLog -LogName Application -Source BioBridgeDoorControl -Newest 20 | Format-List TimeGenerated,Message
+Get-EventLog -LogName Application -Source UDM -Newest 20 | Format-List TimeGenerated,Message
 ```
 
 **Evenements enregistres :**
@@ -597,13 +608,13 @@ Get-EventLog -LogName Application -Source BioBridgeDoorControl -Newest 20 | Form
 ### Le service ne demarre pas
 ```powershell
 # Verifier les logs
-Get-EventLog -LogName Application -Source BioBridgeDoorControl -Newest 5 | Format-List TimeGenerated,Message
+Get-EventLog -LogName Application -Source UDM -Newest 5 | Format-List TimeGenerated,Message
 
 # Verifier que le port n'est pas utilise
 netstat -an | findstr 8080
 
 # Verifier que les DLL sont presentes
-dir C:\BioBridgeDoorControl\
+dir C:\UDM\
 ```
 
 ### Erreur "Unable to connect to the remote server" depuis le telephone
@@ -637,7 +648,7 @@ regsvr32 C:\Windows\SysWOW64\zkemkeeper.dll
 
 ### Le service crash quand on change de terminal
 - Le SDK a un delai de stabilisation de 500ms entre deconnexion et reconnexion
-- Si le probleme persiste, redemarrer le service : `net stop BioBridgeDoorControl && net start BioBridgeDoorControl`
+- Si le probleme persiste, redemarrer le service : `net stop UDM && net start UDM`
 
 ---
 
@@ -657,18 +668,30 @@ regsvr32 C:\Windows\SysWOW64\zkemkeeper.dll
 
 ```cmd
 # Demarrer
-net start BioBridgeDoorControl
+net start UDM
 
 # Arreter
-net stop BioBridgeDoorControl
+net stop UDM
 
 # Redemarrer
-net stop BioBridgeDoorControl && net start BioBridgeDoorControl
+net stop UDM && net start UDM
 
 # Supprimer le service (desinstallation)
-net stop BioBridgeDoorControl
-sc delete BioBridgeDoorControl
+net stop UDM
+sc delete UDM
 
 # Voir le statut
-sc query BioBridgeDoorControl
+sc query UDM
 ```
+
+---
+
+## Migration depuis l'ancien service (BioBridgeDoorControl)
+
+Si l'ancien service est installe, le supprimer d'abord :
+```cmd
+net stop BioBridgeDoorControl
+sc delete BioBridgeDoorControl
+```
+
+Puis suivre les etapes d'installation ci-dessus.

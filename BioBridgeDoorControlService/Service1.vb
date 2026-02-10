@@ -58,7 +58,7 @@ Public Class Service1
         '
         'Service1
         '
-        Me.ServiceName = "BioBridgeDoorControl"
+        Me.ServiceName = "UDM"
 
     End Sub
 
@@ -93,8 +93,8 @@ Public Class Service1
             ' Démarrer le serveur HTTP en premier (peut fonctionner même sans BioBridge)
             isRunning = True
             httpListener = New HttpListener()
-            ' Utiliser localhost pour éviter les problèmes de permissions
-            httpListener.Prefixes.Add("http://localhost:" & HTTP_PORT & "/")
+            ' Ecouter sur toutes les interfaces (localhost + IP reseau)
+            httpListener.Prefixes.Add("http://+:" & HTTP_PORT & "/")
             httpListener.Start()
 
             httpThread = New Thread(AddressOf StartHttpServer)
@@ -214,16 +214,25 @@ Public Class Service1
         End While
     End Sub
 
+    Private Sub AddCorsHeaders(response As HttpListenerResponse)
+        response.Headers.Add("Access-Control-Allow-Origin", "*")
+        response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        response.Headers.Add("Access-Control-Allow-Headers", "Content-Type")
+    End Sub
+
     Private Sub HandleRequest(state As Object)
         Dim context As HttpListenerContext = CType(state, HttpListenerContext)
         Dim request As HttpListenerRequest = context.Request
         Dim response As HttpListenerResponse = context.Response
 
         Try
+            AddCorsHeaders(response)
             Dim path As String = request.Url.AbsolutePath.ToLower()
 
-            ' Router vers le bon endpoint
-            If request.HttpMethod = "POST" Then
+            ' Repondre au preflight CORS
+            If request.HttpMethod = "OPTIONS" Then
+                response.StatusCode = 204
+            ElseIf request.HttpMethod = "POST" Then
                 If path = "/open" Then
                     HandleOpenRequest(context)
                 ElseIf path = "/close" Then
@@ -514,7 +523,7 @@ Public Class Service1
         Dim sEvent As String
         Dim sMachine As String
 
-        sSource = "BioBridgeDoorControl"
+        sSource = "UDM"
         sLog = "Application"
         sEvent = "Door Control Event"
         sMachine = "."
